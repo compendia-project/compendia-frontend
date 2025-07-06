@@ -138,7 +138,7 @@
     resetState();
 
     try {
-      const apiBaseUrl = "https://destined-specially-gazelle.ngrok-free.app";
+      const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || "http://localhost:8000";
       const response = await fetch(
         `${apiBaseUrl}/stories?query=${encodeURIComponent(
           searchQuery
