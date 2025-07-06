@@ -3,6 +3,8 @@
   import Popup from "$components/compendia/Popup.svelte";
   import Section from "$components/compendia/Section.svelte";
   import Country from "$components/compendia/Country.svelte";
+  import { onMount } from "svelte";
+  import { browser } from "$app/environment";
 
 
   import homeschool2 from "$data/samples/Is_homeschooling_preferred_by_people-2.json";
@@ -28,6 +30,9 @@
   export let sharedFacts = [];
   export let stats = {};
   export let errorMessage = null;
+  
+  // Track if search is in progress
+  let searchInProgress = false;
 
   export let viewportHeight;
   export let viewportWidth;
@@ -104,6 +109,27 @@
     isPopupOpen = !isPopupOpen;
   };
 
+  // Add beforeunload warning when search is in progress
+  onMount(() => {
+    const handleBeforeUnload = (event) => {
+      if (searchInProgress) {
+        event.preventDefault();
+        event.returnValue = 'Your search is still in progress. Are you sure you want to leave?';
+        return event.returnValue;
+      }
+    };
+    
+    if (browser) {
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
+    }
+  });
+
+
+
   const handlePopupSubmit = (web_, resultsCountPerPage_) => {
     web = web_;
     resultsCountPerPage = resultsCountPerPage_;
@@ -133,12 +159,15 @@
   // Get data from the API
   const handleSearch = async (e) => {
     e.preventDefault();
+    
     isSticky = true;
     isLoading = true;
+    searchInProgress = true;
     resetState();
 
     try {
       const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || "http://localhost:8000";
+      
       const response = await fetch(
         `${apiBaseUrl}/stories?query=${encodeURIComponent(
           searchQuery
@@ -148,7 +177,7 @@
         {
           headers: {
             "ngrok-skip-browser-warning": "true",
-          },
+          }
         }
       );
 
@@ -195,6 +224,7 @@
       }
     } finally {
       isLoading = false;
+      searchInProgress = false;
     }
   };
 
