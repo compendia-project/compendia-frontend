@@ -2,7 +2,7 @@
   import { Globe, FileText, Save, X } from "lucide-svelte";
 
   export let web = "";
-  export let pageCount = 4;
+  export let resultsCountPerPage = 4;
   export let handlePopupSubmit;
   export let togglePopup;
 </script>
@@ -61,13 +61,13 @@
         </div>
         <input
           type="number"
-          bind:value={pageCount}
+          bind:value={resultsCountPerPage}
           min="1"
           max="100"
           class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-slate-50/50 dark:bg-slate-700/50 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-300/40 dark:focus:ring-slate-500/40 focus:border-slate-300 dark:focus:border-slate-500 focus:bg-white dark:focus:bg-slate-700 transition-all"
         />
         <p class="text-xs text-slate-500 dark:text-slate-400">
-          Maximum number of search results to analyze
+          Maximum number of search results to analyze in a page
         </p>
       </div>
     </div>
@@ -77,7 +77,7 @@
       class="px-6 py-4 border-t border-slate-200/60 dark:border-slate-700/60 bg-slate-50/30 dark:bg-slate-800/30"
     >
       <button
-        on:click={() => handlePopupSubmit(web, pageCount)}
+        on:click={() => handlePopupSubmit(web, resultsCountPerPage)}
         class="w-full px-4 py-3 bg-slate-600 dark:bg-slate-700 text-white rounded-xl hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors font-medium flex items-center justify-center gap-2"
       >
         <Save class="w-4 h-4" />

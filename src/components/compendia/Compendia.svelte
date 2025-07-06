@@ -20,7 +20,7 @@
   export let isLoading = false;
   export let isPopupOpen = false;
   export let web = "";
-  export let pageCount = 4;
+  export let resultsCountPerPage = 4;
   export let isDataLoading = false;
   export let clusterData = {};
   export let clusters = [];
@@ -104,9 +104,9 @@
     isPopupOpen = !isPopupOpen;
   };
 
-  const handlePopupSubmit = (web_, pageCount_) => {
+  const handlePopupSubmit = (web_, resultsCountPerPage_) => {
     web = web_;
-    pageCount = pageCount_;
+    resultsCountPerPage = resultsCountPerPage_;
     isPopupOpen = false;
   };
 
@@ -144,7 +144,7 @@
           searchQuery
         )}&web=${encodeURIComponent(
           web
-        )}&page_count=${pageCount}&country_code=${countryCode}`,
+        )}&result_count_per_page=${resultsCountPerPage}&country_code=${countryCode}&num_pages=2`,
         {
           headers: {
             "ngrok-skip-browser-warning": "true",
@@ -503,7 +503,7 @@
   {/if}
 
   {#if isPopupOpen}
-    <Popup {web} {pageCount} {togglePopup} {handlePopupSubmit} />
+    <Popup {web} {resultsCountPerPage} {togglePopup} {handlePopupSubmit} />
   {/if}
 
   {#if isDataLoading && !isLoading}
