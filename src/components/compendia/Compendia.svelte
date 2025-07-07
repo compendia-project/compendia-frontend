@@ -3,6 +3,7 @@
   import Popup from "$components/compendia/Popup.svelte";
   import Section from "$components/compendia/Section.svelte";
   import Country from "$components/compendia/Country.svelte";
+  import TagsSection from "$components/compendia/TagsSection.svelte";
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
 
@@ -105,6 +106,84 @@
     },
   ];
 
+  let recentResults = []; // Store full result objects with IDs
+  
+  // Fetch recent results from API
+  const fetchRecentResults = async () => {
+    try {
+      const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || "http://localhost:8000";
+      const response = await fetch(`${apiBaseUrl}/recent`, {
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Store full results and extract queries for display
+        recentResults = data.results
+          .filter(result => result.is_completed)
+          .slice(0, 10); // Limit to 10 most recent
+        
+      }
+    } catch (error) {
+      console.error("Failed to fetch recent results:", error);
+      recentResults = [];
+    }
+  };
+  
+  // Load recent data by ID
+  const loadRecentData = async (selectedResult) => {
+    searchQuery = selectedResult.query;
+    isSticky = true;
+    isLoading = true;
+    resetState();
+    
+    try {
+      const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || "http://localhost:8000";
+      const response = await fetch(`${apiBaseUrl}/results/${selectedResult.id}`, {
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      const recentData = result.data;
+      
+      validateDataStructure(recentData);
+      loadFilterData();
+      
+      const dataCopy = JSON.parse(JSON.stringify(recentData));
+      originalData = dataCopy;
+      
+      setTimeout(() => {
+        clusterData = recentData;
+        clusters = recentData.clusters;
+        sharedArticles = recentData.shared_articles;
+        sharedFacts = recentData.shared_facts;
+        stats = recentData.stats;
+        
+        updateState2(clusterData);
+        if (isRelevanceEnabled) {
+          filter_cluster_on_relevance(relevanceOptions);
+        }
+        if (isClusterLimitEnabled) {
+          filter_cluster_on_cluster_limit(clusterLimit);
+        }
+        isDataLoading = true;
+        isLoading = false;
+      }, 500);
+    } catch (error) {
+      console.error("Failed to load recent data:", error);
+      errorMessage = `Failed to load recent result: ${error.message}`;
+      isLoading = false;
+    }
+  };
+  
   const togglePopup = () => {
     isPopupOpen = !isPopupOpen;
   };
@@ -121,6 +200,9 @@
     
     if (browser) {
       window.addEventListener('beforeunload', handleBeforeUnload);
+      
+      // Fetch recent results when component mounts
+      fetchRecentResults();
       
       return () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
@@ -489,25 +571,30 @@
         Search
       </button>
     </div>
+    
     {#if !isSticky}
-      <div
-        class="flex pt-4 flex-wrap gap-2 mt-5 justify-center overflow-x-auto"
-      >
-        {#each exampleQueries as example}
-          <div
-            class="bg-gray-50 text-gray-700 px-4 py-2 rounded-full text-sm cursor-pointer
-               transition-all duration-200 hover:bg-gray-100 hover:-translate-y-1
-               active:translate-y-0 border border-gray-200/80
-               dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700/80
-               dark:hover:bg-gray-700 dark:hover:text-gray-200
-               focus:outline-none focus:ring-2 focus:ring-gray-400/50
-               dark:focus:ring-gray-500/50"
-            on:click={() => loadExampleData(example)}
-          >
-            {example.query}
-          </div>
-        {/each}
-      </div>
+      <!-- Tags section for non-sticky mode only -->
+       <div class="flex pt-4 flex-wrap gap-4 mt-5 justify-center overflow-x-auto">
+
+        <!-- Recent box - only show if there are recent queries -->
+         {#if recentResults.length > 0}
+           <TagsSection 
+             queries={recentResults}
+             title="Recent Stories"
+             colorScheme="green"
+             handleSearch={loadRecentData} 
+           />
+         {/if}
+
+         <!-- Samples box -->
+          <TagsSection 
+             queries={exampleQueries}
+           title="Samples stories"
+           colorScheme="blue"
+           handleSearch={loadExampleData} 
+           />
+        </div>
+
     {/if}
   </form>
 
