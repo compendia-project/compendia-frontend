@@ -6,6 +6,7 @@
   import TagsSection from "$components/compendia/TagsSection.svelte";
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
+  import { PUBLIC_API_BASE_URL } from '$env/static/public'; 
 
 
   import homeschool2 from "$data/samples/Is_homeschooling_preferred_by_people-2.json";
@@ -111,7 +112,9 @@
   // Fetch recent results from API
   const fetchRecentResults = async () => {
     try {
-      const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || "http://localhost:8000";
+      const apiBaseUrl = PUBLIC_API_BASE_URL || "http://localhost:8000";
+
+      console.log('api base', apiBaseUrl)
       const response = await fetch(`${apiBaseUrl}/recent`, {
         headers: {
           "ngrok-skip-browser-warning": "true",
@@ -140,7 +143,7 @@
     resetState();
     
     try {
-      const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || "http://localhost:8000";
+      const apiBaseUrl = PUBLIC_API_BASE_URL || "http://localhost:8000";
       const response = await fetch(`${apiBaseUrl}/results/${selectedResult.id}`, {
         headers: {
           "ngrok-skip-browser-warning": "true",
@@ -248,7 +251,7 @@
     resetState();
 
     try {
-      const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL || "http://localhost:8000";
+      const apiBaseUrl = PUBLIC_API_BASE_URL || "http://localhost:8000";
       
       const response = await fetch(
         `${apiBaseUrl}/stories?query=${encodeURIComponent(
