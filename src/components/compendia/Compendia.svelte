@@ -4,10 +4,10 @@
   import Section from "$components/compendia/Section.svelte";
   import Country from "$components/compendia/Country.svelte";
   import TagsSection from "$components/compendia/TagsSection.svelte";
+  import ModernSearchBox from "$components/compendia/ModernSearchBox.svelte";
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
-  import { PUBLIC_API_BASE_URL } from '$env/static/public'; 
-
+  import { PUBLIC_API_BASE_URL } from "$env/static/public";
 
   import homeschool2 from "$data/samples/Is_homeschooling_preferred_by_people-2.json";
   import toktokTrends from "$data/samples/Tiktok_trends_worldwide-2.json";
@@ -17,7 +17,6 @@
   import AIjobs from "$data/samples/Does_AI_leading_to_new_jobs_or_job_displacements.json";
   import gold_price from "$data/samples/gold_price.json";
   import how_was_tesla_performing_in_2025 from "$data/samples/how_was_tesla_performing_in_2025.json";
-
 
   export let searchQuery = "";
   export let isSticky = false;
@@ -32,7 +31,7 @@
   export let sharedFacts = [];
   export let stats = {};
   export let errorMessage = null;
-  
+
   // Track if search is in progress
   let searchInProgress = false;
 
@@ -49,6 +48,9 @@
   let isClusterLimitEnabled = false;
 
   let originalData;
+
+  let showRecentStories = false;
+  let showSampleStories = false;
 
   const ranges = {
     low: { min: 0, max: 0.33 },
@@ -94,68 +96,70 @@
   ];
 
   let recentResults = []; // Store full result objects with IDs
-  
+
   // Fetch recent results from API
   const fetchRecentResults = async () => {
     try {
       const apiBaseUrl = PUBLIC_API_BASE_URL || "http://localhost:8000";
 
-      console.log('api base', apiBaseUrl)
+      console.log("api base", apiBaseUrl);
       const response = await fetch(`${apiBaseUrl}/recent`, {
         headers: {
           "ngrok-skip-browser-warning": "true",
-        }
+        },
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         // Store full results and extract queries for display
         recentResults = data.results
-          .filter(result => result.is_completed)
+          .filter((result) => result.is_completed)
           .slice(0, 10); // Limit to 10 most recent
-        
       }
     } catch (error) {
       console.error("Failed to fetch recent results:", error);
       recentResults = [];
     }
   };
-  
+
   // Load recent data by ID
   const loadRecentData = async (selectedResult) => {
     searchQuery = selectedResult.query;
     isSticky = true;
     isLoading = true;
     resetState();
-    
+
     try {
       const apiBaseUrl = PUBLIC_API_BASE_URL || "http://localhost:8000";
-      const response = await fetch(`${apiBaseUrl}/results/${selectedResult.id}`, {
-        headers: {
-          "ngrok-skip-browser-warning": "true",
+      const response = await fetch(
+        `${apiBaseUrl}/results/${selectedResult.id}`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
         }
-      });
-      
+      );
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
+
       const result = await response.json();
       const recentData = result.data;
-      
+
       validateDataStructure(recentData);
       loadFilterData();
-      
+
       const dataCopy = JSON.parse(JSON.stringify(recentData));
       originalData = dataCopy;
-      
+
       setTimeout(() => {
         clusterData = recentData;
         clusters = recentData.clusters;
         sharedArticles = recentData.shared_articles;
         sharedFacts = recentData.shared_facts;
         stats = recentData.stats;
-        
+
         updateState2(clusterData);
         if (isRelevanceEnabled) {
           filter_cluster_on_relevance(relevanceOptions);
@@ -172,7 +176,7 @@
       isLoading = false;
     }
   };
-  
+
   const togglePopup = () => {
     isPopupOpen = !isPopupOpen;
   };
@@ -182,24 +186,23 @@
     const handleBeforeUnload = (event) => {
       if (searchInProgress) {
         event.preventDefault();
-        event.returnValue = 'Your search is still in progress. Are you sure you want to leave?';
+        event.returnValue =
+          "Your search is still in progress. Are you sure you want to leave?";
         return event.returnValue;
       }
     };
-    
+
     if (browser) {
-      window.addEventListener('beforeunload', handleBeforeUnload);
-      
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
       // Fetch recent results when component mounts
       fetchRecentResults();
-      
+
       return () => {
-        window.removeEventListener('beforeunload', handleBeforeUnload);
+        window.removeEventListener("beforeunload", handleBeforeUnload);
       };
     }
   });
-
-
 
   const handlePopupSubmit = (web_, resultsCountPerPage_) => {
     web = web_;
@@ -230,7 +233,7 @@
   // Get data from the API
   const handleSearch = async (e) => {
     e.preventDefault();
-    
+
     isSticky = true;
     isLoading = true;
     searchInProgress = true;
@@ -238,7 +241,7 @@
 
     try {
       const apiBaseUrl = PUBLIC_API_BASE_URL || "http://localhost:8000";
-      
+
       const response = await fetch(
         `${apiBaseUrl}/stories?query=${encodeURIComponent(
           searchQuery
@@ -248,7 +251,7 @@
         {
           headers: {
             "ngrok-skip-browser-warning": "true",
-          }
+          },
         }
       );
 
@@ -522,70 +525,90 @@
 </script>
 
 <div class={isSticky ? "" : "mainPage"}>
-  <form
-    on:submit={handleSearch}
-    class="bg-white dark:bg-[#1a2e3c] {isSticky ? 'stickyForm' : 'form'}"
-  >
-    <img
-      src="/assets/compendia/compendia-2.svg"
-      class={isSticky ? "stickyLogo" : "logo"}
-      alt="compendia logo"
-      on:click={() => (isSticky ? location.reload() : null)}
-      style="cursor: pointer;"
-    />
-    <div class={isSticky ? "stickyInputContainer" : "inputContainer"}>
-      <input
-        type="text"
-        bind:value={searchQuery}
-        placeholder="Search on Compendia..."
-        class="input text-black"
+  {#if isSticky}
+    <!-- Sticky version - keep original design -->
+    <form
+      on:submit={handleSearch}
+      class="bg-white dark:bg-[#1a2e3c] stickyForm"
+    >
+      <img
+        src="/assets/compendia/compendia-2.svg"
+        class="stickyLogo"
+        alt="compendia logo"
+        on:click={() => location.reload()}
+        style="cursor: pointer;"
       />
-      {#if isLoading}
-        <img
-          src="/assets/compendia/loader.svg"
-          class="loadersvg"
-          alt="Loading..."
+      <div class="stickyInputContainer">
+        <input
+          type="text"
+          bind:value={searchQuery}
+          placeholder="Search on Compendia..."
+          class="input text-black"
         />
-      {:else}
-        <img
-          src="/assets/compendia/options.svg"
-          class="options color-primary"
-          alt="Options"
-          on:click={togglePopup}
-        />
-      {/if}
-    </div>
-    <div class={isSticky ? "stickyButtonContainer" : "buttonContainer"}>
-      <button type="submit" class={isSticky ? "stickyButton" : "button"}>
-        Search
-      </button>
-    </div>
-    
-    {#if !isSticky}
+        {#if isLoading}
+          <img
+            src="/assets/compendia/loader.svg"
+            class="loadersvg"
+            alt="Loading..."
+          />
+        {:else}
+          <img
+            src="/assets/compendia/options.svg"
+            class="options color-primary"
+            alt="Options"
+            on:click={togglePopup}
+          />
+        {/if}
+      </div>
+      <div class="stickyButtonContainer">
+        <button type="submit" class="stickyButton"> Search </button>
+      </div>
+    </form>
+  {:else}
+    <!-- Non-sticky version - use modern search box -->
+    <div class="modern-search-wrapper">
+      <img
+        src="/assets/compendia/compendia-2.svg"
+        class="logo"
+        alt="compendia logo"
+        style="cursor: pointer;"
+      />
+
+      <ModernSearchBox
+        bind:searchQuery
+        bind:showSampleStories
+        bind:showRecentStories
+        {isLoading}
+        onSearch={handleSearch}
+        onOptionsClick={togglePopup}
+      />
+
       <!-- Tags section for non-sticky mode only -->
-       <div class="flex pt-4 flex-wrap gap-4 mt-5 justify-center overflow-x-auto">
-
+      <div
+        class="flex pt-4 flex-wrap gap-4 mt-5 justify-center overflow-x-auto w-[766px]"
+      >
         <!-- Recent box - only show if there are recent queries -->
-         {#if recentResults.length > 0}
-           <TagsSection 
-             queries={recentResults}
-             title="Recent Stories"
-             colorScheme="green"
-             handleSearch={loadRecentData} 
-           />
-         {/if}
+        {#if recentResults.length > 0 && showRecentStories}
+          <TagsSection
+            queries={recentResults}
+            title="Recent Stories"
+            colorScheme="green"
+            handleSearch={loadRecentData}
+          />
+        {/if}
 
-         <!-- Samples box -->
-          <TagsSection 
-             queries={exampleQueries}
-           title="Samples stories"
-           colorScheme="blue"
-           handleSearch={loadExampleData} 
-           />
-        </div>
-
-    {/if}
-  </form>
+        <!-- Samples box -->
+        {#if exampleQueries.length > 0 && showSampleStories}
+          <TagsSection
+            queries={exampleQueries}
+            title="Samples stories"
+            colorScheme="blue"
+            handleSearch={loadExampleData}
+          />
+        {/if}
+      </div>
+    </div>
+  {/if}
 
   {#if errorMessage}
     <div
@@ -632,13 +655,8 @@
     top: 100px;
   }
 
-  .lottie-animation {
-    width: 100vw;
-    height: 100vh;
-  }
-
   .logo {
-    height: 8em;
+    height: 10em;
     padding: 1.5em;
     will-change: filter;
     transition: filter 300ms;
@@ -656,13 +674,14 @@
     height: 50px;
   }
 
-  .form {
+  .modern-search-wrapper {
     width: 100%;
-    max-width: 584px;
+    max-width: 800px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 2rem;
   }
 
   .stickyForm {
@@ -679,11 +698,6 @@
     align-items: center;
     padding: 20px 0; /* Add some padding */
     box-shadow: 0 2px 5px var(--color-shadow); /* Optional shadow */
-  }
-
-  .inputContainer {
-    width: 100%;
-    display: flex;
   }
 
   .stickyInputContainer {
@@ -707,32 +721,11 @@
     text-overflow: ellipsis;
   }
 
-  .buttonContainer {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
   .stickyButtonContainer {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     /* margin-left: 20px; */
-  }
-
-  .button {
-    padding: 10px 24px;
-    font-size: 14px;
-    background-color: var(--color-button-bg);
-    color: var(--color-button-text);
-    border: 1px solid var(--color-button-bg);
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition:
-      background-color 0.3s,
-      box-shadow 0.3s;
   }
 
   .stickyButton {
