@@ -93,7 +93,7 @@
                 <line x1="16" y1="17" x2="8" y2="17"></line>
                 <polyline points="10,9 9,9 8,9"></polyline>
               </svg>
-              <span class="hidden md:block">Sample</span>
+              <span class="hidden md:block">Samples</span>
             </button>
             <!-- {#if showSampleStories}
               <div class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-lg z-50 min-w-48 overflow-hidden">

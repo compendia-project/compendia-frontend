@@ -615,7 +615,7 @@
         {#if exampleQueries.length > 0 && showSampleStories}
           <TagsSection
             queries={exampleQueries}
-            title="Samples stories"
+            title="Sample stories"
             colorScheme="blue"
             handleSearch={loadExampleData}
           />
