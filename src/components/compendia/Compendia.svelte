@@ -57,20 +57,6 @@
   };
 
   // Initialize from localStorage
-  $: {
-    const storedFilters = localStorage.getItem("compendiaFilters");
-    if (storedFilters) {
-      const filters = JSON.parse(storedFilters);
-      articlesLimit = filters.connectedArticlesLimit || 0;
-      clusterLimit = filters.clusterLimit || 0;
-      showFacts = filters.showFacts ?? true;
-      relevanceOptions = filters.relevanceOptions || {
-        low: true,
-        medium: true,
-        high: true,
-      };
-    }
-  }
 
   const exampleQueries = [
     {
