@@ -526,7 +526,7 @@
 
 <div class={isSticky ? "" : "mainPage"}>
   {#if isSticky}
-    <!-- Sticky version - keep original design -->
+    <!-- Sticky version - modern design with integrated search icon -->
     <form
       on:submit={handleSearch}
       class="bg-white dark:bg-[#1a2e3c] stickyForm"
@@ -538,30 +538,44 @@
         on:click={() => location.reload()}
         style="cursor: pointer;"
       />
-      <div class="stickyInputContainer">
-        <input
-          type="text"
-          bind:value={searchQuery}
-          placeholder="Search on Compendia..."
-          class="input text-black"
-        />
-        {#if isLoading}
-          <img
-            src="/assets/compendia/loader.svg"
-            class="loadersvg"
-            alt="Loading..."
+      <div class="stickySearchContainer">
+        <div class="stickySearchWrapper">
+          <input
+            type="text"
+            bind:value={searchQuery}
+            placeholder="Search on Compendia..."
+            class="stickySearchInput"
           />
-        {:else}
-          <img
-            src="/assets/compendia/options.svg"
-            class="options color-primary"
-            alt="Options"
-            on:click={togglePopup}
-          />
-        {/if}
-      </div>
-      <div class="stickyButtonContainer">
-        <button type="submit" class="stickyButton"> Search </button>
+          <div class="stickySearchActions">
+            {#if !isLoading}
+              <button
+                type="button"
+                class="stickyOptionsButton"
+                on:click={togglePopup}
+                aria-label="Options"
+              >
+                <svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor">
+                  <path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-1 13.5l103 78-110 190-119-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 41q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 65q-5 14-7 29.5t-2 31.5q0 16 2 31.5t7 29.5l-86 65 39 68 99-41q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/>
+                </svg>
+              </button>
+            {/if}
+            <button
+              type="submit"
+              class="stickySearchButton"
+              disabled={isLoading}
+              aria-label="Search"
+            >
+              {#if isLoading}
+                <div class="stickySpinner"></div>
+              {:else}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+              {/if}
+            </button>
+          </div>
+        </div>
       </div>
     </form>
   {:else}
@@ -668,9 +682,9 @@
 
   .stickyLogo {
     /* margin-bottom: 40px; */
-    margin-left: 20px;
+    margin-left: 40px;
     margin-right: 20px;
-    width: 100px;
+    width: 120px;
     height: 50px;
   }
 
@@ -700,49 +714,150 @@
     box-shadow: 0 2px 5px var(--color-shadow); /* Optional shadow */
   }
 
-  .stickyInputContainer {
-    width: 60%;
-    display: flex;
-    margin-left: 20px;
-    margin-right: 20px;
+  .stickySearchContainer {
+    flex: 1;
+    max-width: 800px;
+    margin: 0 20px;
   }
 
-  .input {
+  .stickySearchWrapper {
+    position: relative;
     width: 100%;
-    padding: 12px 20px;
-    font-size: 16px;
-    border: 1px solid var(--color-input-border);
+    border: 1px solid #e5e7eb;
     border-radius: 24px;
-    box-shadow: none;
-    outline: none;
-    transition:
-      box-shadow 0.3s,
-      border-color 0.3s;
-    text-overflow: ellipsis;
-  }
-
-  .stickyButtonContainer {
+    background: white;
     display: flex;
+    align-items: center;
+    transition: border-color 0.2s ease;
+  }
+
+  :global(.dark) .stickySearchWrapper {
+    border-color: #374151;
+    background: #1f2937;
+  }
+
+  .stickySearchWrapper:hover {
+    border-color: #d1d5db;
+  }
+
+  :global(.dark) .stickySearchWrapper:hover {
+    border-color: #4b5563;
+  }
+
+  .stickySearchWrapper:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .stickySearchInput {
+    flex: 1;
+    padding: 10px 16px;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #111827;
+    line-height: 1.5;
+    min-height: 24px;
+  }
+
+  :global(.dark) .stickySearchInput {
+    color: #f9fafb;
+  }
+
+  .stickySearchInput::placeholder {
+    color: #6b7280;
+  }
+
+  :global(.dark) .stickySearchInput::placeholder {
+    color: #9ca3af;
+  }
+
+  .stickySearchActions {
+    display: flex;
+    align-items: center;
+    gap: 0px;
+    padding-right: 8px;
+  }
+
+  .stickyOptionsButton {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
-    /* margin-left: 20px; */
-  }
-
-  .stickyButton {
-    padding: 10px 24px;
-    font-size: 14px;
-    background-color: var(--color-button-bg);
-    color: var(--color-button-text);
-    border: 1px solid var(--color-button-bg);
-    border-radius: 4px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: #6b7280;
     cursor: pointer;
-    transition:
-      background-color 0.3s,
-      box-shadow 0.3s;
+    transition: all 0.2s ease;
   }
 
-  .stickyButton:hover {
-    background-color: #e0e0e0;
+  :global(.dark) .stickyOptionsButton {
+    color: #9ca3af;
+  }
+
+  .stickyOptionsButton:hover {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  :global(.dark) .stickyOptionsButton:hover {
+    background: #374151;
+    color: #d1d5db;
+  }
+
+  .stickySearchButton {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  :global(.dark) .stickySearchButton {
+    color: #9ca3af;
+  }
+
+  .stickySearchButton:hover:not(:disabled) {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  :global(.dark) .stickySearchButton:hover:not(:disabled) {
+    background: #374151;
+    color: #d1d5db;
+  }
+
+  .stickySearchButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .stickySpinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #d1d5db;
+    border-top: 2px solid #6b7280;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  :global(.dark) .stickySpinner {
+    border-color: #4b5563;
+    border-top-color: #9ca3af;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
   .mainPage {
@@ -754,20 +869,5 @@
     min-height: 100vh;
   }
 
-  .loadersvg {
-    width: 35px;
-    height: 35px;
-    margin-top: 5px;
-    margin-left: -50px;
-    position: relative;
-  }
 
-  .options {
-    width: 22px;
-    height: 22px;
-    margin-top: 11px;
-    margin-left: -35px;
-    position: relative;
-    cursor: pointer;
-  }
 </style>
