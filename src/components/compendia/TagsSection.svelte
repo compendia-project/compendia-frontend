@@ -110,14 +110,14 @@
   }
 </script>
 
-<fieldset class="border border-gray-300 dark:border-gray-600 rounded-lg p-4 w-full">
-  <legend class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide px-2">{title}</legend>
+<fieldset class="border text-[14px] border-gray-300 dark:border-gray-600 rounded-lg p-4 w-full">
+  <legend class="text-[14px] text-gray-500 dark:text-gray-400 uppercase tracking-wide px-2">{title}</legend>
   
   <!-- Tags container -->
   <div class="flex gap-3 flex-wrap justify-center py-2" bind:this={tagsContainer}>
     {#each displayedQueries as query}
       <div
-        class="{colors.bg} {colors.text} px-3 py-1 rounded-full text-xs cursor-pointer
+        class="{colors.bg} {colors.text} px-3 py-1 rounded-full text-[14px] cursor-pointer
                transition-all duration-200 {colors.hoverBg} hover:-translate-y-0.5
                active:translate-y-0 border {colors.border}
                {colors.darkBg} {colors.darkText} {colors.darkBorder}
@@ -138,7 +138,7 @@
     <div class="flex justify-center pt-2">
       <div
         on:click={toggle}
-        class="flex items-center gap-1 text-[11px] text-gray-400 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 cursor-pointer border-none bg-transparent p-0"
+        class="flex items-center gap-1 text-[14px] text-gray-400 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 cursor-pointer border-none bg-transparent p-0"
         role="button"
         tabindex="0"
         on:keydown={(e) => {
