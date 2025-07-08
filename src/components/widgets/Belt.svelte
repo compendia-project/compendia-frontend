@@ -35,14 +35,25 @@
   function getPerimeterPoint(start, end) {
     const dx = end.x - start.x;
     const dy = end.y - start.y;
-    const length = Math.sqrt(dx * dx + dy * dy);
-
-    if (length === 0) return start;
-
-    const scale = circleRadius / length;
+    const length = Math.sqrt(dx * dx + dy * dy)
+    let angle;
+    if (length === 0) {
+      // If circles are at the same position, use default angle
+      angle = -Math.PI / 2; // Top of circle
+    } else {
+      // Determine if the target circle is to the right or left
+      if (dx > 0) {
+        // Target is to the right - use 65 degrees to the right from top
+        angle = -Math.PI / 2 + (65 * Math.PI / 180);
+      } else {
+        // Target is to the left - use 65 degrees to the left from top
+        angle = -Math.PI / 2 - (65 * Math.PI / 180);
+      }
+    }
+    
     return {
-      x: start.x + dx * scale,
-      y: start.y + dy * scale,
+      x: start.x + circleRadius * Math.cos(angle),
+      y: start.y + circleRadius * Math.sin(angle),
     };
   }
 
