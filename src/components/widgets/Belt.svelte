@@ -29,35 +29,36 @@
       : CIRCLE_CONFIG_SMALL;
 
   const circleRadius = CIRCLE_CONFIG.BELT_RADIUS;
+  const smallDxThreshold = 100;
 
   $: activeClusterId = curMergedId?.split("_")[0];
 
-  function getPerimeterPoint(start, end) {
+  function getTitleRectConnectionPoint(start, end, isStart = true) {
     const dx = end.x - start.x;
-    const dy = end.y - start.y;
-    const length = Math.sqrt(dx * dx + dy * dy)
-    let angle;
-    if (length === 0) {
-      // If circles are at the same position, use default angle
-      angle = -Math.PI / 2; // Top of circle
+    const startCluster = clusters.find((c) => c.cluster_id === start.id);
+    const textLength = startCluster?.title?.length || 0;
+    const rectWidth = textLength * 7.5 + 30;
+
+    let connectionX, connectionY;
+
+    if (Math.abs(dx) < smallDxThreshold) {
+      connectionX = start.x + -rectWidth / 2;
     } else {
-      // Determine if the target circle is to the right or left
       if (dx > 0) {
-        // Target is to the right - use 65 degrees to the right from top
-        angle = -Math.PI / 2 + (65 * Math.PI / 180);
+        connectionX = start.x + rectWidth / 2;
       } else {
-        // Target is to the left - use 65 degrees to the left from top
-        angle = -Math.PI / 2 - (65 * Math.PI / 180);
+        connectionX = start.x + -rectWidth / 2;
       }
     }
-    
+
+    connectionY = start.y + (-circleRadius - 51);
+
     return {
-      x: start.x + circleRadius * Math.cos(angle),
-      y: start.y + circleRadius * Math.sin(angle),
+      x: connectionX,
+      y: connectionY,
     };
   }
 
-  // Cleanup interval on component destroy
   onDestroy(() => {
     if (timeInterval) {
       clearInterval(timeInterval);
@@ -95,14 +96,11 @@
     return [startCluster, endCluster];
   }
 
-  // Track when each cluster becomes visible for individual belt timing
   let clusterVisibilityTime = new Map();
   let currentTime = Date.now();
   let newlyVisibleClusters = new Set();
   let animatedBelts = new Set();
   let alreadyAnimatedBelts = new Set();
-
-  // Update current time periodically for reactive belt visibility
   let timeInterval;
   $: if (visibleClusters.length > 0) {
     if (timeInterval) clearInterval(timeInterval);
@@ -112,13 +110,12 @@
   }
 
   $: {
-    // Track newly visible clusters
     const baseTime = Date.now();
     newlyVisibleClusters.clear();
 
     visibleClusters.forEach((cluster) => {
       if (!clusterVisibilityTime.has(cluster.cluster_id)) {
-        const animationEndTime = 1300; // Start right after circle animation (2000ms)
+        const animationEndTime = 1300;
         clusterVisibilityTime.set(
           cluster.cluster_id,
           baseTime + animationEndTime
@@ -127,11 +124,9 @@
       }
     });
 
-    // Clean up times for clusters no longer visible
     for (let clusterId of clusterVisibilityTime.keys()) {
       if (!visibleClusterIds.has(clusterId)) {
         clusterVisibilityTime.delete(clusterId);
-        // Remove belts connected to this cluster from animated sets
         const keysToDelete = [];
         animatedBelts.forEach((beltKey) => {
           const [cluster1, cluster2] = beltKey.split("_").map(Number);
@@ -150,16 +145,11 @@
   $: if (circles && width && height && shared_articles) {
     lineData = shared_articles
       .filter((article) => {
-        // If both limit values are 0, no lines are visible
         if (limit[0] === 0 && limit[1] === 0) {
           return false;
-        }
-        // If both limit values are the same, show lines with that exact count
-        else if (limit[0] === limit[1]) {
+        } else if (limit[0] === limit[1]) {
           return article.count === limit[0];
-        }
-        // If limit values are different, show lines with count in [x,y] range
-        else {
+        } else {
           return article.count >= limit[0] && article.count <= limit[1];
         }
       })
@@ -174,24 +164,27 @@
         const endCircle = getCircleById(article.end_cluster);
 
         if (startCircle && endCircle) {
-          // Calculate perimeter points
-          const startPoint = getPerimeterPoint(startCircle, endCircle);
-          const endPoint = getPerimeterPoint(endCircle, startCircle);
+          const startPoint = getTitleRectConnectionPoint(
+            startCircle,
+            endCircle
+          );
+          const endPoint = getTitleRectConnectionPoint(
+            endCircle,
+            startCircle,
+            false
+          );
 
-          // Calculate when this belt should become visible
           const startTime =
             clusterVisibilityTime.get(article.start_cluster) || 0;
           const endTime = clusterVisibilityTime.get(article.end_cluster) || 0;
           const beltVisibilityTime = Math.max(startTime, endTime);
 
-          // Create consistent belt key (order clusters to avoid duplicates)
           const sortedClusters = [
             article.start_cluster,
             article.end_cluster,
           ].sort((a, b) => a - b);
           const beltKey = `${sortedClusters[0]}_${sortedClusters[1]}`;
 
-          // Check if this belt should be animated (connected to newly visible cluster)
           const isNewBelt =
             newlyVisibleClusters.has(article.start_cluster) ||
             newlyVisibleClusters.has(article.end_cluster);
@@ -207,10 +200,8 @@
             start: { x: startPoint.x, y: startPoint.y },
             end: { x: endPoint.x, y: endPoint.y },
             beltWidth: (() => {
-              // Calculate scaled belt width based on limit range
               const minLimit = Math.min(limit[0], limit[1]);
               const maxLimit = Math.max(limit[0], limit[1]);
-              const limitRange = maxLimit - minLimit;
 
               if (maxLimit === minLimit) {
                 return 3;
@@ -235,10 +226,31 @@
       .filter((data) => data !== null);
   }
 
-  let curve = d3
+  const linkHorizontal = d3
     .linkHorizontal()
     .x((d) => d.x)
     .y((d) => d.y);
+
+  function createCurve(source, target) {
+    const dx = target.x - source.x;
+    const absDx = Math.abs(dx);
+
+    if (absDx < smallDxThreshold) {
+      const startX = source.x;
+      const startY = source.y;
+      const endX = target.x;
+      const endY = target.y;
+      const dy = endY - startY;
+      const absDy = Math.abs(dy);
+      const leftOffset = Math.max(80, absDy * 0.25);
+
+      return `M${startX},${startY}C${startX - leftOffset},${
+        startY + dy * 0.3
+      } ${endX - leftOffset},${endY - dy * 0.3} ${endX},${endY}`;
+    } else {
+      return linkHorizontal({ source, target });
+    }
+  }
 
   function tooltip(node, articles) {
     articles = d3.sort(articles, (a, b) => d3.ascending(a.year, b.year));
@@ -296,7 +308,7 @@
         class:inactive={curMergedId &&
           startCluster !== activeClusterId &&
           endCluster !== activeClusterId}
-        d={curve({ source: start, target: end })}
+        d={createCurve(start, end)}
         class="fill-none stroke-[var(--belt-stroke)] dark:stroke-[var(--belt-stroke-dark)] cursoe-pointer hover:stroke-[#9f9f9f] dark:hover:stroke-[#698496] transition-colors"
         stroke-width={Math.max(beltWidth, 1)}
         use:tooltip={articles}
@@ -318,7 +330,7 @@
   }
 
   path:hover {
-    isolation: isolate; /* Creates new stacking context */
+    isolation: isolate;
     stroke-opacity: 1 !important;
   }
 
@@ -326,7 +338,6 @@
     opacity: 0.2;
     pointer-events: none;
     transition: opacity 0.3s ease;
-    z-index: 0;
   }
 
   .tooltip-topic {
@@ -334,23 +345,19 @@
     font-size: 0.85rem;
     margin-bottom: 10px;
     text-align: center;
-    /* color: #adb2eb; */
     color: var(--tooltip-text);
     text-transform: capitalize;
-    /* border-bottom: 1px solid #ddd; */
     border-bottom: 1px solid var(--article-card-border);
     padding-bottom: 6px;
   }
 
   :global(.article-card) {
     position: relative;
-    /* background-color: #1a2633; */
     background-color: var(--article-card-bg);
     border-radius: 8px;
     padding: 10px;
     margin-bottom: 5px;
     margin-right: 2px;
-    /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); */
     border: 1px solid var(--article-card-border);
     transition: transform 0.2s ease;
   }
@@ -370,7 +377,6 @@
   :global(.article-title) {
     font-size: 0.85rem;
     margin-bottom: 8px !important;
-    /* color: #d1e0eb; */
     color: var(--tooltip-text);
   }
 
@@ -380,7 +386,6 @@
     margin-left: auto;
     padding: 2px 6px;
     border-radius: 4px;
-    /* background-color: #2d4050; */
     background-color: var(--article-card-bg);
     border: 1px solid var(--article-card-border);
     position: static;
@@ -388,7 +393,7 @@
 
   :global(.text-clamp) {
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* Limit to 3 lines */
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;

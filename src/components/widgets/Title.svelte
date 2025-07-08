@@ -7,6 +7,27 @@
 </script>
 
 {#if radius && cluster}
+  <!-- Left rectangle -->
+  <rect
+    x={-rectWidth / 2 - 5}
+    y={-radius - 56}
+    width="10"
+    height="14"
+    rx="5"
+    ry="5"
+    class="fill-[var(--cluster-title-bg-cn)] dark:fill-[var(--cluster-title-bg-cn-dark)]"
+  />
+
+  <!-- Right rectangle -->
+  <rect
+    x={rectWidth / 2 - 5}
+    y={-radius - 56}
+    width="10"
+    height="14"
+    rx="5"
+    ry="5"
+    class="fill-[var(--cluster-title-bg-cn)] dark:fill-[var(--cluster-title-bg-cn-dark)]"
+  />
   <rect
     x={-rectWidth / 2}
     y={-radius - 70}

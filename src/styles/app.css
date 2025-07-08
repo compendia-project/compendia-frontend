@@ -91,6 +91,8 @@
   /* Cluter title */
   --cluster-title-bg: #e0eefc; /* Background color */
   --cluster-title-bg-dark: #e0eefc; /* Background color */
+  --cluster-title-bg-cn: #f3f7fa; /* Background color */
+  --cluster-title-bg-cn-dark: #f3f7fa; /* Background color */
   --cluster-title-text: #333333; /* Title text color */
   --cluster-title-text-dark: #333333; /* Title text color */
 
