@@ -29,7 +29,7 @@
       : CIRCLE_CONFIG_SMALL;
 
   const circleRadius = CIRCLE_CONFIG.BELT_RADIUS;
-  const smallDxThreshold = 100;
+  const smallDxThreshold = 20;
 
   $: activeClusterId = curMergedId?.split("_")[0];
 
