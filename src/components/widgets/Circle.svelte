@@ -186,7 +186,7 @@
         .innerRadius(radius)
         .outerRadius(radius)
         .startAngle(startAngle - 0.05)
-        .endAngle(endAngle + Math.PI / 15);
+        .endAngle(endAngle + Math.PI / 10);
 
       isReady = true;
     } else {
@@ -437,8 +437,8 @@
         >
           <textPath
             href={`#${activeArcId}`}
-            text-anchor="end"
-            startOffset="30%"
+            text-anchor="start"
+            startOffset="5%"
           >
             {cluster.number_of_articles}
           </textPath>
@@ -449,8 +449,8 @@
         >
           <textPath
             href={`#${factActiveArcId}`}
-            text-anchor="end"
-            startOffset="30%"
+            text-anchor="start"
+            startOffset="5%"
           >
             {numFacts}
           </textPath>
@@ -462,7 +462,7 @@
           <textPath
             href={`#${textArcId}`}
             text-anchor="start"
-            startOffset="45%"
+            startOffset="43%"
           >
             {totArticle}
           </textPath>
@@ -474,7 +474,7 @@
           <textPath
             href={`#${textArcId}`}
             text-anchor="start"
-            startOffset="45%"
+            startOffset="43%"
           >
             {totalFacts}
           </textPath>

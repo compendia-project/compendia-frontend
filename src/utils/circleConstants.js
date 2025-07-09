@@ -52,7 +52,7 @@ export const CIRCLE_CONFIG_LARGE = {
       BOUNDARIES:{
             X_MIN: 0.21,
             X_MAX: 0.9,
-            Y_MIN_SMALL: 0.2,
+            Y_MIN_SMALL: 0.15,
             Y_MIN_LARGE: 0.18,
             Y_MAX: 0.75,
       }
@@ -78,8 +78,8 @@ export const CIRCLE_CONFIG_SMALL = {
   
   // Collision radius for force simulation
   COLLISION_RADIUS: {
-    SMALL: 110,
-    MEDIUM: 120,
+    SMALL: 150,
+    MEDIUM: 150,
     LARGE: 150
   },
   POSITIONS_THREE:[
@@ -109,7 +109,7 @@ export const CIRCLE_CONFIG_SMALL = {
       BOUNDARIES:{
             X_MIN: 0.24,
             X_MAX: 0.9,
-            Y_MIN_SMALL: 0.2,
+            Y_MIN_SMALL: 0.15,
             Y_MIN_LARGE: 0.15,
             Y_MAX: 0.8,
       }

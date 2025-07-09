@@ -204,15 +204,15 @@
       .forceSimulation(circles)
       .force("targetX", d3.forceX((d) => d.x).strength(2))
       .force("targetY", d3.forceY((d) => d.y).strength(2))
-      .force("center", d3.forceCenter(width * 0.57, height * 0.5).strength(0.8))
+      // .force("center", d3.forceCenter(width * 0.57, height * 0.45).strength(0.8))
       .force(
         "collide",
         d3
           .forceCollide()
-          .strength(1.0)
+          .strength(1)
           .radius((d) => {
             // Adjust collision radius based on number of circles for better spacing
-            return d.radius + collisionRadius;
+            return  collisionRadius;
           })
       )
       .force("charge", d3.forceManyBody().strength(-80))
@@ -470,7 +470,7 @@
           <circle
             cx={circle.x}
             cy={circle.y}
-            r={circle.radius + collisionRadius}
+            r={collisionRadius}
             fill="none"
             stroke="rgba(255, 0, 0, 0.3)"
             stroke-width="2"
