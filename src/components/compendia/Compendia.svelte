@@ -243,15 +243,20 @@
       const apiBaseUrl = PUBLIC_API_BASE_URL || "http://localhost:8000";
 
       const response = await fetch(
-        `${apiBaseUrl}/stories?query=${encodeURIComponent(
-          searchQuery
-        )}&web=${encodeURIComponent(
-          web
-        )}&result_count_per_page=${resultsCountPerPage}&country_code=${countryCode}&num_pages=2`,
+        `${apiBaseUrl}/stories`,
         {
+          method: "POST",
           headers: {
+            "Content-Type": "application/json",
             "ngrok-skip-browser-warning": "true",
           },
+          body: JSON.stringify({
+            query: searchQuery,
+            web: web,
+            result_count_per_page: resultsCountPerPage,
+            country_code: countryCode,
+            num_pages: 2
+          })
         }
       );
 
