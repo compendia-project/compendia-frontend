@@ -141,6 +141,10 @@
       );
 
       if (!response.ok) {
+        if (response.status === 429) {
+          const errorData = await response.json();
+          throw new Error(`Duplicate Request: ${errorData.detail}`);
+        }
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
@@ -234,6 +238,12 @@
   const handleSearch = async (e) => {
     e.preventDefault();
 
+    // Prevent duplicate requests
+    if (searchInProgress) {
+      console.log("Search already in progress, ignoring duplicate request");
+      return;
+    }
+
     isSticky = true;
     isLoading = true;
     searchInProgress = true;
@@ -256,7 +266,9 @@
             result_count_per_page: resultsCountPerPage,
             country_code: countryCode,
             num_pages: 2
-          })
+          }),
+          // Set a very long timeout for the long-running process
+          timeout: 40 * 60 * 1000 // 40 minutes
         }
       );
 
@@ -291,7 +303,9 @@
       console.error("Fetch Error:", error);
 
       // Provide more helpful error messages
-      if (
+      if (error.message.includes("Duplicate Request")) {
+        errorMessage = error.message.replace("Duplicate Request: ", "");
+      } else if (
         error.message.includes("Failed to fetch") ||
         error.message.includes("NetworkError")
       ) {
