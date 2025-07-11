@@ -29,7 +29,7 @@
       : CIRCLE_CONFIG_SMALL;
 
   const circleRadius = CIRCLE_CONFIG.BELT_RADIUS;
-  const smallDxThreshold = 40;
+  const smallDxThreshold = 100;
 
   $: activeClusterId = curMergedId?.split("_")[0];
 
@@ -262,26 +262,26 @@
          ${articles
            .map(
              (article) => `
-        <div class="article-card">
-          <p class="article-title text-clamp">${
-            articlesDict[article.article_id].result_title
-          }</p>
-          <div class="article-content_">
-            <a target="_blank" href="${
-              article.url
-            }" style="text-decoration: none; color: transparent;" >
-            <img src=${articlesDict[article.article_id].favicon} alt=${
-              articlesDict[article.article_id].source
-            } class="w-5 h-5 bg-[#f1f3f4] rounded-full " />
-            </a>
-            <span class="text-xs text-gray-400 truncate block">${
-              articlesDict[article.article_id].source
-            }</span>
-            <span class="fact-count_" style="background-color:#e2e2e2c7; color:${getColor(
-              article.year
-            )};">${article.year}</span>
+        <a target="_blank" href="${
+          article.url
+        }" style="text-decoration: none; color: inherit;" class="article-card-link">
+          <div class="article-card">
+            <p class="article-title text-clamp">${
+              articlesDict[article.article_id].result_title
+            }</p>
+            <div class="article-content_">
+              <img src=${articlesDict[article.article_id].favicon} alt=${
+                articlesDict[article.article_id].source
+              } class="w-5 h-5 bg-[#f1f3f4] rounded-full " />
+              <span class="text-xs text-gray-400 truncate block">${
+                articlesDict[article.article_id].source
+              }</span>
+              <span class="fact-count_" style="background-color:#e2e2e2c7; color:${getColor(
+                article.year
+              )};">${article.year}</span>
+            </div>
           </div>
-        </div>
+        </a>
          `
            )
            .join("")}
@@ -401,7 +401,7 @@
 
   :global(.content-container) {
     padding-top: 10px;
-    max-height: 300px;
+    max-height: 400px;
     overflow-y: auto;
   }
 </style>

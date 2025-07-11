@@ -1,5 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { Info } from 'lucide-svelte';
+  import tippy from 'tippy.js';
   
   export let value = 0;
   export let min = 0;
@@ -13,6 +15,7 @@
   export let showTickValues = true; // Show tick value labels
   export let tickValueStep = null; // Custom step for showing tick values, if null will use tickStep or step
   export let disabled = false;
+  export let tooltipText = ''; // Tooltip text for the info icon
   
   const dispatch = createEventDispatcher();
   
@@ -153,8 +156,17 @@
   
   <!-- Centered label below numbers -->
   {#if label}
-    <div class="absolute w-full top-8 flex justify-center">
+    <div class="absolute w-full top-8 flex justify-center gap-1">
       <span class="text-[11px] font-bold text-gray-500 dark:text-gray-400">{label}</span>
+     {#if tooltipText}
+        <div 
+          class="info-icon cursor-help"
+          use:tippy={{ content: tooltipText, placement: 'top', theme: 'light-border',  animation: false,
+      delay: [0, 0] }}
+        >
+          <Info size={12} class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" />
+        </div>
+      {/if}
     </div>
   {/if}
 </div>

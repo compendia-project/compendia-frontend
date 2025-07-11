@@ -62,6 +62,7 @@
     leftLabel="Most Relevant"
     rightLabel="Least Relevant"
     on:change={handleTopicsChange}
+    tooltipText="Filter topics based on their relevance order. Less number of topics means more relevant topics to your query."
   />
 </div>
 
@@ -80,7 +81,7 @@
       label="Number of Shared Articles"
       leftLabel="Weaker Connections"
       rightLabel="Stronger Connections"
-      on:change={handleLimitChange}
+      tooltipText="Filter connections (links) based on the number of shared articles."
     />
   </div>
 

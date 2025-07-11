@@ -213,6 +213,9 @@
          ${articles
            .map(
              (article) => `
+             <a target="_blank" href="${
+              article.url
+            }" style="text-decoration: none; color: transparent" >
         <div class="article-card">
           <p class="article-title text-clamp">${
             articlesDict[article.id].result_title
@@ -233,7 +236,7 @@
             )};">${article.year}</span>
           </div>
         </div>
-         `
+         </a>`
            )
            .join("")}
            </div>
@@ -558,7 +561,7 @@
 
   :global(.rl-article-container){
     padding-top: 10px;
-    max-height: 450px;
+    max-height: 500px;
     overflow-y: auto;
   }
 </style>

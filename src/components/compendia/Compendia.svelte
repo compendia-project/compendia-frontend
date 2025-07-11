@@ -23,7 +23,7 @@
   export let isLoading = false;
   export let isPopupOpen = false;
   export let web = "";
-  export let resultsCountPerPage = 4;
+  export let resultsCountPerPage = 8;
   export let isDataLoading = false;
   export let clusterData = {};
   export let clusters = [];
