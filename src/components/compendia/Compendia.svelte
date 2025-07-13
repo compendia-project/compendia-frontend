@@ -34,6 +34,7 @@
 
   // Track if search is in progress
   let searchInProgress = false;
+  let currentAbortController = null;
 
   export let viewportHeight;
   export let viewportWidth;
@@ -204,6 +205,10 @@
 
       return () => {
         window.removeEventListener("beforeunload", handleBeforeUnload);
+        // Cancel any ongoing requests when component is destroyed
+        if (currentAbortController) {
+          currentAbortController.abort();
+        }
       };
     }
   });
@@ -244,6 +249,14 @@
       return;
     }
 
+    // Cancel any existing request
+    if (currentAbortController) {
+      currentAbortController.abort();
+    }
+
+    // Create new AbortController for this request
+    currentAbortController = new AbortController();
+
     isSticky = true;
     isLoading = true;
     searchInProgress = true;
@@ -267,8 +280,7 @@
             country_code: countryCode,
             num_pages: 2
           }),
-          // Set a very long timeout for the long-running process
-          timeout: 40 * 60 * 1000 // 40 minutes
+          signal: currentAbortController.signal
         }
       );
 
@@ -300,6 +312,12 @@
 
       isDataLoading = true;
     } catch (error) {
+      // Handle AbortError separately
+      if (error.name === 'AbortError') {
+        console.log('Request was cancelled');
+        return;
+      }
+      
       console.error("Fetch Error:", error);
 
       // Provide more helpful error messages
@@ -318,6 +336,7 @@
     } finally {
       isLoading = false;
       searchInProgress = false;
+      currentAbortController = null;
     }
   };
 
