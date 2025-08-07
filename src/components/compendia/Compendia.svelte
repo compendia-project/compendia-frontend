@@ -115,7 +115,7 @@
         // Store full results and extract queries for display
         recentResults = data.results
           .filter((result) => result.is_completed)
-          .slice(0, 10); // Limit to 10 most recent
+          .slice(0, 20); // Limit to 10 most recent
       }
     } catch (error) {
       console.error("Failed to fetch recent results:", error);
