@@ -1718,7 +1718,7 @@
                 "TikTok users are 30% more likely to say that \"women's sports is exciting to watch.\"",
                 "57% of users name social media as their core brand and product discovery source."
             ],
-            "cluster_similarity_score": 0.2762761711355453,
+            "cluster_similarity_score": 1.0,
             "top_keywords": [
                 "tiktok",
                 "users",
@@ -3717,7 +3717,7 @@
                 "TikTok users are 30% more likely to say that \"women's sports is exciting to watch.\"",
                 "TikTok users in the US are 44% more likely than non-users to go to the movies at least once per month."
             ],
-            "cluster_similarity_score": 0.7710547326661937,
+            "cluster_similarity_score": 0.862547326661937,
             "top_keywords": [
                 "tiktok",
                 "users",
@@ -6820,7 +6820,7 @@
                 "TikTok had 315 million downloads in Q1 2020.",
                 "TikTok reached five billion downloads in 2024."
             ],
-            "cluster_similarity_score": 1.0,
+            "cluster_similarity_score": 0.95,
             "top_keywords": [
                 "tiktok",
                 "million",
