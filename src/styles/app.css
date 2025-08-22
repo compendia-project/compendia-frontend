@@ -1,0 +1,212 @@
+@import "variables.css";
+@import "normalize.css";
+@import "font.css";
+@import "reset.css";
+
+/* colors defined in variables.css */
+:root {
+  /* font */
+  --sans: "Atlas Grotesk", -apple-system, BlinkMacSystemFont, Helvetica, Arial,
+    sans-serif;
+  --serif: "Tiempos Text Web", Iowan Old Style, Times New Roman, Times, serif;
+  --mono: Menlo, Consolas, Monaco, monospace;
+
+  /* z-index */
+  --z-bottom: -100;
+  --z-middle: 0;
+  --z-top: 100;
+  --z-overlay: 1000;
+
+  /* presets (used in reset.css) */
+  --border-radius: 2px;
+  --font-body: var(--serif);
+  --font-form: var(--sans);
+  --color-bg: #222;
+  --color-fg: var(--color-gray-900);
+  --color-primary: var(--color-black);
+  --color-link: var(--color-black);
+  --color-focus: var(--color-red);
+  --color-mark: var(--color-yellow);
+  --color-selection: var(--color-gray-300);
+  --color-border: var(--color-gray-300);
+  --color-button-bg: var(--color-gray-300);
+  --color-button-fg: var(--color-gray-900);
+  --color-button-hover: var(--color-gray-400);
+  --color-input-bg: var(--color-gray-50);
+  --color-input-fg: var(--color-gray-900);
+  --color-placeholder: var(--color-gray-500);
+
+  /* Primary colors */
+  --color-primary: #646cff;
+  --color-primary-alpha: rgba(100, 108, 255, 0.67);
+  --color-secondary: #61dafb;
+  --color-secondary-alpha: rgba(97, 218, 251, 0.67);
+
+  /* UI colors */
+  --color-input-border: #dfe1e5;
+  --color-button-bg: #f8f9fa;
+  --color-button-text: #3c4043;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+
+  /* Status colors */
+  --color-error-bg: rgba(254, 226, 226, 0.9);
+  --color-error-main: #ef4444;
+  --color-error-text: #ffffff;
+  --color-error-button-bg: #ffffff;
+  --color-error-button-text: #dc2626;
+
+  /* Loader colors */
+  --color-loader: #ff3d00;
+  --color-spinner-bg: rgba(0, 0, 0, 0.1);
+  --color-spinner-fg: #0099ff;
+
+  /* Example query colors */
+  --color-example-bg: #f3f4f6;
+  --color-example-text: #4b5563;
+  --color-example-border: #e5e7eb;
+  --color-example-hover-bg: #e5e7eb;
+
+  /* Dark mode colors */
+  --color-dark-example-bg: #1f2937;
+  --color-dark-example-text: #d1d5db;
+  --color-dark-example-border: #374151;
+  --color-dark-example-hover-bg: #374151;
+
+  /* Arc colors */
+  --color-progress-arc-article: #ffdbdb;
+  --color-progress-arc-article-dark: #ffb2b2d1;
+  --color-progress-arc-article-text: #fab4b4;
+  --color-progress-arc-article-text-dark: #ffdbdb;
+  
+  --color-progress-arc-fact: #fdb7ead1;
+  --color-progress-arc-fact-dark: #fdb7ead1;
+  --color-progress-arc-fact-text: #ff8fe1d1;
+  --color-progress-arc-fact-text-dark: #fdb7ead1;
+
+  --color-background-track: #fcfcfc;
+  --color-background-track-dark: #2a3e4c;
+  --color-arc-label: rgba(79, 79, 79, 0.9);
+  --color-arc-label-dark: rgba(255, 255, 255, 0.9);
+
+  /* Cluter title */
+  --cluster-title-bg: #e0eefc; /* Background color */
+  --cluster-title-bg-dark: #e0eefc; /* Background color */
+  --cluster-title-bg-cn: #f3f7fa; /* Background color */
+  --cluster-title-bg-cn-dark: #f3f7fa; /* Background color */
+  --cluster-title-text: #333333; /* Title text color */
+  --cluster-title-text-dark: #333333; /* Title text color */
+
+  /* Footer */
+  --footer-bg: #1a2e3c;
+  --footer-text: #adb2b7;
+
+  /* Outer circle */
+  --outer-circle-fill: #fcfdfd;
+  --outer-circle-fill-dark: #2a3e4c;
+  --outer-circle-stroke: #b8ccd6;
+  --outer-circle-stroke-dark: #e5e7eb;
+
+  /* Inner circle */
+  --inner-circle-fill: #f3f4f6;
+  --inner-circle-fill-dark: #2a3e4c;
+  --inner-circle-stroke: #b8ccd6;
+  --inner-circle-stroke-dark: #efefef;
+
+  /* Circle text */
+  --circle-text-fill: #454545;
+  --circle-text-fill-dark: #d1d5db;
+
+  /* Belt */
+  --belt-fill: #f3f4f6;
+  --belt-fill-dark: #2a3e4c;
+  --belt-stroke: #f0f2f2;
+  --belt-stroke-dark: #2a3e4c;
+
+  /* Fact */
+  --fact-circle-fill: #b8ccd6;
+  --fact-circle-fill-dark: #ecf9ff;
+  --fact-line-stroke: #b8ccd6;
+  --fact-line-stroke-dark: #e5e7eb;
+
+  /* Card */
+  --card-bg: #f2f5ff;
+  --card-bg-dark: rgba(17, 17, 17, 0.95);
+  --card-border: #f2f5ff;
+  --card-border-dark: #708090;
+  --card-title-bg: #5C6BC0;
+  --card-title-bg-dark: #5C6BC0;
+  --card-title-text: #ffffff;
+  --card-title-text-dark: #ffffff;
+  --card-narrative-text: #041d35;
+  --card-narrative-text-dark: #ffffff;
+
+  /* "1" second duration */
+  --1s: 1ms;
+}
+
+/* dark theme */
+/* this is a starting place for dark mode - test before deploying */
+
+/* @media screen and (prefers-color-scheme:dark) {
+	:root {
+		--color-bg: var(--color-gray-900);
+		--color-fg: var(--color-gray-100);
+		--color-primary: var(--color-white);
+		--color-link: var(--color-white);
+		--color-focus: var(--color-red);
+		--color-mark: var(--color-yellow);
+		--color-selection: var(--color-gray-600);
+		--color-border: var(--color-gray-600);
+		--color-button-bg: var(--color-gray-600);
+		--color-button-fg: var(--color-gray-100);
+		--color-button-hover: var(--color-gray-700);
+		--color-input-bg: var(--color-gray-800);
+		--color-input-fg: var(--color-gray-100);
+		--color-placeholder: var(--color-gray-400);
+		--color-text-outline: var(--color-bg);
+	}
+} */
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  :root {
+    --1s: 1s;
+  }
+}
+
+h1 {
+  font-size: var(--48px, 48px);
+}
+
+.title-large span {
+  display: block;
+}
+
+h2 {
+  font-size: var(--36px, 36px);
+}
+
+h3 {
+  font-size: var(--28px, 28px);
+}
+
+h4 {
+  font-size: var(--24px, 24px);
+}
+
+h5 {
+  font-size: var(--22px, 22px);
+}
+
+h6 {
+  font-size: var(--20px, 20px);
+}
+
+.step-content a {
+  color: white;
+}
+
+#content .methods p {
+  font-family: var(--sans);
+  font-size: 14px;
+  margin-bottom: 1rem;
+}
